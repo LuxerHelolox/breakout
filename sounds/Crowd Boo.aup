@@ -1,0 +1,35 @@
+<?xml version="1.0" standalone="no" ?>
+<!DOCTYPE project PUBLIC "-//audacityproject-1.3.0//DTD//EN" "http://audacity.sourceforge.net/xml/audacityproject-1.3.0.dtd" >
+<project xmlns="http://audacity.sourceforge.net/xml/" projname="Crowd Boo_data" version="1.3.0" audacityversion="1.3.0-beta" sel0="0.0023856118" sel1="0.0918460535" vpos="0" h="0.0000000000" zoom="838.3593750000" rate="44100.000000" >
+	<tags title="Crowd Sounds" artist="SoundBible.com" album="" track="-1" year="" genre="-1" comments="" id3v2="0" />
+	<wavetrack name="Crowd Boo" channel="0" linked="1" offset="0.00000000" rate="44100.000000" gain="1.000000" pan="0.000000" >
+		<waveclip offset="0.00000000" >
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="64228" >
+				<waveblock start="0" >
+					<simpleblockfile filename='e0000923.au' len='64228' min='-0.597574' max='0.620567' rms='0.137211'/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints='4'>
+				<controlpoint t='0.003573417668' val='1.000000000000'/>
+				<controlpoint t='0.003578417668' val='1.000000000000'/>
+				<controlpoint t='0.084684218153' val='1.000000000000'/>
+				<controlpoint t='0.084689218153' val='1.000000000000'/>
+			</envelope>
+		</waveclip>
+	</wavetrack>
+	<wavetrack name="Crowd Boo" channel="1" linked="0" offset="0.00000000" rate="44100.000000" gain="1.000000" pan="0.000000" >
+		<waveclip offset="0.00000000" >
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="64228" >
+				<waveblock start="0" >
+					<simpleblockfile filename='e00003e8.au' len='64228' min='-0.597574' max='0.620567' rms='0.137211'/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints='4'>
+				<controlpoint t='0.003573417668' val='1.000000000000'/>
+				<controlpoint t='0.003578417668' val='1.000000000000'/>
+				<controlpoint t='0.084684218153' val='1.000000000000'/>
+				<controlpoint t='0.084689218153' val='1.000000000000'/>
+			</envelope>
+		</waveclip>
+	</wavetrack>
+</project>
