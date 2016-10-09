@@ -147,9 +147,8 @@ class Breakout(QWidget):
                 self._ball.ydir *= -1
 
             if ballLPos >= first and ballLPos < second:
-                pass
-                # self._ball.xdir *= -1
-                # self._ball.ydir *= -1
+                self._ball.xdir *= -1
+                self._ball.ydir *= -1
 
             if ballLPos >= second and ballLPos < third:
                 self._ball.xdir = 0
