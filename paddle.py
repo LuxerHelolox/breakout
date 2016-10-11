@@ -4,10 +4,10 @@ from PyQt4.QtGui import *
 
 class Paddle:
 
+    library = ""
+
     def __init__(self, library, initial_x,initial_y, right_edge ):
-        self._dx = 0
-        self._image = QImage(library +"\paddle.png")  # img = QtGui.QImage()
-        self._rect = self.image.rect()
+        Paddle.library = library
         self._initial_x = initial_x
         self._initial_y = initial_y
         self._right_edge = right_edge - 80
@@ -31,6 +31,9 @@ class Paddle:
         self._rect.moveTo(x, y)
 
     def resetState(self):
+        self._dx = 0
+        self._image = QImage(Paddle.library +"\paddle.png")  # img = QtGui.QImage()
+        self._rect = self.image.rect()
         self._rect.moveTo(self._initial_x, self._initial_y)
 
     @property

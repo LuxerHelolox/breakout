@@ -27,7 +27,6 @@ class MainWindow(QMainWindow):
         self.createActions()
         self.createMenus()
 
-
         # format the main window
         self.setGeometry(100,100,540,800)
 
@@ -64,11 +63,11 @@ class MainWindow(QMainWindow):
 
         self.basicAct = self.skinGroup.addAction(QAction(self.tr("Basic"), self))
         self.basicAct.setCheckable(True)
-        self.basicAct.setChecked(True)
         self.connect(self.basicAct, SIGNAL("triggered()"), self.basicskinSelected)
 
         self.androidAct = self.skinGroup.addAction(QAction(self.tr("Android"), self))
         self.androidAct.setCheckable(True)
+        self.androidAct.setChecked(True)
         self.connect(self.androidAct, SIGNAL("triggered()"), self.androidskinSelected)
 
         self.arcanoidAct = self.skinGroup.addAction(QAction(self.tr("Arcanoid"), self))
@@ -95,6 +94,10 @@ class MainWindow(QMainWindow):
         self.RealisticAct.setCheckable(True)
         self.connect(self.RealisticAct, SIGNAL("triggered()"), self.realisticphysicsSelected)
 
+        self.autoPaddleAct = QAction(self.tr("Enabled"), self)
+        self.autoPaddleAct.setCheckable(True)
+        self.connect(self.autoPaddleAct, SIGNAL("triggered()"), self.autopaddletoggled)
+
     def createMenus(self):
         self.fileMenu = self.menuBar().addMenu(self.tr("&File"))
         self.fileMenu.addAction(self.exitAct)
@@ -111,6 +114,8 @@ class MainWindow(QMainWindow):
         self.physicsMenu.addAction(self.atariRandomizedAct)
         self.physicsMenu.addAction(self.RealisticAct)
 
+        self.autopaddleMenu = self.menuBar().addMenu(self.tr("&Auto_Paddle"))
+        self.autopaddleMenu.addAction(self.autoPaddleAct)
 
         self.helpMenu = self.menuBar().addMenu(self.tr("&Help"))
         self.helpMenu.addAction(self.aboutAct)
@@ -123,35 +128,44 @@ class MainWindow(QMainWindow):
         self.statusBar().showMessage(self.tr("Ready"))
 
     def keyPressEvent(self, e):
-        self.breakoutwidget.keyPressEvent(e)
+        if e.key() == Qt.Key_Escape:
+            self.breakoutwidget.pauseGame()
+        else:
+            self.breakoutwidget.keyPressEvent(e)
+
+    def keyReleaseEvent(self, e):
+        self.breakoutwidget.keyReleaseEvent(e)
 
     def basicskinSelected(self):
-        pass
+        self.breakoutwidget.changeskin ("basic")
         self.skinMenu.show()
 
     def androidskinSelected(self):
-        pass
+        self.breakoutwidget.changeskin ("android")
         self.skinMenu.show()
 
     def arcanoidskinSelected(self):
-        pass
+        self.breakoutwidget.changeskin ("arcanoid")
         self.skinMenu.show()
 
     def atariskinSelected(self):
-        pass
+        self.breakoutwidget.changeskin ("atari")
         self.skinMenu.show()
 
     def atariclassicphysicsSelected(self):
-        pass
+        self.breakoutwidget.changephysics ("Classic")
         self.physicsMenu.show()
 
     def atarirandomizedphysicsSelected(self):
-        pass
+        self.breakoutwidget.changephysics ("Randomized")
         self.physicsMenu.show()
 
     def realisticphysicsSelected(self):
-        pass
+        self.breakoutwidget.changephysics ("Randomized")
         self.physicsMenu.show()
+
+    def autopaddletoggled(self):
+        self.breakoutwidget.autopaddle = self.autoPaddleAct.isChecked()
 
 ################################################################
 if __name__ == "__main__":

@@ -5,17 +5,27 @@ import math
 
 class Ball():
 
-    def __init__(self,library,initial_x,initial_y, right_edge):
+    physics = ""
+    library = ""
+
+    def __init__(self,library, physics, initial_x,initial_y, right_edge):
         self._initial_x = initial_x
         self._initial_y = initial_y
         self._right_edge = right_edge
-        self._image = QImage(library +"\\"+"ball.png")  # img = QtGui.QImage()
-        self._rect = self.image.rect()
+        Ball.library = library
+        Ball.physics = physics
+        random.seed()
         self.resetState()
 
     def resetState(self):
-        self._xdir = 0.5 + random.random()/2
-        self._ydir = -(math.sqrt ( 2- self._xdir*self._xdir))
+        self._image = QImage(Ball.library +"\\"+"ball.png")  # img = QtGui.QImage()
+        self._rect = self.image.rect()
+        if Ball.physics == "Classic":
+            self._xdir = 1
+            self._ydir = -1
+        else:
+            self._xdir = 0.5 + random.random()-1
+            self._ydir = -(math.sqrt ( 2- self._xdir*self._xdir))
         self._left = self._initial_x
         self._top = self._initial_y
         self._rect.moveTo(self._initial_x, self._initial_y)
@@ -59,3 +69,6 @@ class Ball():
     @ydir.setter
     def ydir(self, y):
         self._ydir = y
+
+
+

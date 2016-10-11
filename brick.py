@@ -3,11 +3,18 @@ from PyQt4.QtGui import *
 
 
 class Brick:
+
+    library = ""
+
     def __init__(self, library, x, y):
-        self._destroyed = False
-        self._image = QImage(library+"\\purple_brick.png")  # img = QtGui.QImage()
+        Brick.library = library
+        self.resetState()
         self._rect = self.image.rect()
         self._rect.translate(x, y)
+
+    def resetState(self):
+        self._image = QImage(Brick.library +"\\"+"purple_brick.png")  # img = QtGui.QImage()
+        self._destroyed = False
 
     @property
     def rect(self):
