@@ -5,11 +5,11 @@ from paddle import *
 from ball import *
 import sys
 import random
-
+import math
 
 class Breakout(QWidget):
-    N_OF_ROWS = 5
-    N_OF_COLUMNS = 6
+    N_OF_ROWS = 6
+    N_OF_COLUMNS = 5
     N_OF_BRICKS = N_OF_ROWS * N_OF_COLUMNS
     BRICKHIGHT = 40
     BRICKWIDTH = 80
@@ -23,9 +23,9 @@ class Breakout(QWidget):
         self._paused = False
         self._gameStarted = False
         self._bottom_edge = breakout_height
-        self._ball = Ball("android", breakout_width/2+40, breakout_height-60, breakout_width )
+        self._ball = Ball("android", breakout_width/2+30, breakout_height-60, breakout_width )
         self._paddle = Paddle("android", breakout_width/2, breakout_height-40, breakout_width)
-        self._bricks = [Brick("android", j * Breakout.BRICKWIDTH + 30, i * Breakout.BRICKHIGHT + 50)
+        self._bricks = [Brick("android", j * Breakout.BRICKWIDTH + 70, i * Breakout.BRICKHIGHT + 50)
                         for i in range(Breakout.N_OF_ROWS) for j in range(Breakout.N_OF_COLUMNS)]
         self.setFixedSize(breakout_width, breakout_height)
         self.setWindowTitle(breakout_title)
@@ -125,70 +125,118 @@ class Breakout(QWidget):
         if self._ball.rect.bottom() > self._bottom_edge:
             self.stopGame()
 
-        j = 0
-        for i in range(Breakout.N_OF_BRICKS):
-            if self._bricks[i].destroyed:
-                j += 1
+        if not self._ball.rect.bottom() > self._bottom_edge-38:
+            j = 0
+            for i in range(Breakout.N_OF_BRICKS):
+                if self._bricks[i].destroyed:
+                    j += 1
 
-        if j == Breakout.N_OF_BRICKS:
-            self.victory()
+            if j == Breakout.N_OF_BRICKS:
+                self.victory()
 
-        if self._ball.rect.intersects(self._paddle.rect):
-            paddleLPos = self._paddle.rect.left()
-            ballLPos = self._ball.rect.left()
+            if self._ball.rect.intersects(self._paddle.rect):
+                paddleLPos = self._paddle.rect.left()
+                ballMiddle = self._ball.rect.left() + self._ball.rect.width()/2
 
-            first = paddleLPos + 16
-            second = paddleLPos + 32
-            third = paddleLPos + 48
-            fourth = paddleLPos + 64
+                first = paddleLPos + 16
+                second = paddleLPos + 32
+                third = paddleLPos + 48
+                fourth = paddleLPos + 64
 
-            if ballLPos < first:
-                self._ball.xdir *= -1
-                self._ball.ydir *= -1
+                if ballMiddle < first:
+                    self._ball.xdir = -1 * math.fabs(self._ball.xdir)
+                    self._ball.ydir *= -1
 
-            if ballLPos >= first and ballLPos < second:
-                self._ball.xdir *= -1
-                self._ball.ydir *= -1
+                if ballMiddle >= first and ballMiddle < second:
+                    self._ball.xdir = -1 * math.fabs(self._ball.xdir)
+                    self._ball.ydir *= -1
 
-            if ballLPos >= second and ballLPos < third:
-                self._ball.xdir = 0
-                self._ball.ydir = -1
+                if ballMiddle >= second and ballMiddle < third:
+                    self._ball.xdir = 1 * self._ball.xdir
+                    self._ball.ydir *= -1
 
-            if ballLPos >= third and ballLPos < fourth:
-                self._ball.xdir = 1
-                self._ball.ydir *= -1
+                    #self._ball.xdir = 0
+                    #self._ball.ydir *= -1
 
-            if ballLPos > fourth:
-                self._ball.xdir = 1
-                self._ball.ydir *= -1
+                if ballMiddle >= third and ballMiddle < fourth:
+                    self._ball.xdir = math.fabs(self._ball.xdir)
+                    self._ball.ydir *= -1
 
-            QSound.play("sounds\Mario_Jumping.wav")
+                if ballMiddle > fourth:
+                    self._ball.xdir = math.fabs(self._ball.xdir)
+                    self._ball.ydir *= - 1
+
+                QSound.play("sounds\Mario_Jumping.wav")
 
         for i in range(Breakout.N_OF_BRICKS):
             if self._ball.rect.intersects(self._bricks[i].rect):
-                ballLeft = self._ball.rect.left()
-                ballHeight = self._ball.rect.height()
-                ballWidth = self._ball.rect.width()
-                ballTop = self._ball.rect.top()
-
-                pointRight = QPoint(ballLeft + ballWidth + 1, ballTop)
-                pointLeft = QPoint(ballLeft - 1, ballTop)
-                pointTop = QPoint(ballLeft, ballTop - 1)
-                pointBottom = QPoint(ballLeft, ballTop + ballHeight + 1)
-
                 if not self._bricks[i].destroyed:
-                    if self._bricks[i].rect.contains(pointRight):
-                        self._ball.xdir = -1
-                    elif self._bricks[i].rect.contains(pointLeft):
-                        self._ball.xdir = 1
-
-                    if self._bricks[i].rect.contains(pointTop):
-                        self._ball.ydir = 1
-                    elif self._bricks[i].rect.contains(pointBottom):
-                        self._ball.ydir = -1
+                    print ("Tegla"+str(i))
 
                     self._bricks[i].destroyed = True
                     QSound.play("sounds\Robot_blip_1.wav")
+
+                    ballLeft = self._ball.rect.left()
+                    ballHeight = self._ball.rect.height()
+                    ballWidth = self._ball.rect.width()
+                    ballTop = self._ball.rect.top()
+
+                    pointTopMiddle = QPoint(ballLeft + ballWidth / 2, ballTop - 1)
+                    pointBottomMiddle = QPoint(ballLeft + ballWidth / 2, ballTop + ballHeight + 1)
+                    pointLeftMiddle = QPoint(ballLeft - 1, ballTop + ballHeight / 2)
+                    pointRightMiddle = QPoint(ballLeft + ballWidth + 1, ballTop + ballHeight / 2)
+
+                    if self._bricks[i].rect.contains(pointTopMiddle):
+                        self._ball.ydir *= -1
+                        print("pointTopMiddle")
+                    elif self._bricks[i].rect.contains(pointBottomMiddle):
+                        self._ball.ydir *= -1
+                        print("pointBottomMiddle")
+                    elif self._bricks[i].rect.contains(pointLeftMiddle):
+                        self._ball.xdir *= -1
+                        print("pointLeftMiddle")
+                    elif self._bricks[i].rect.contains(pointRightMiddle):
+                        self._ball.xdir *= -1
+                        print("pointRightMiddle")
+                    else:
+
+                        pointTopRight = QPoint(ballLeft + ballWidth + 1, ballTop)
+                        pointTopLeft = QPoint(ballLeft - 1, ballTop)
+                        pointLeftTop = QPoint(ballLeft, ballTop - 1)
+                        pointLeftBottom = QPoint(ballLeft, ballTop + ballHeight + 1)
+
+                        pointBottomRight = QPoint(ballLeft + ballWidth + 1, ballTop + ballHeight)
+                        pointBottomLeft = QPoint(ballLeft - 1, ballTop + ballHeight)
+                        pointRightTop = QPoint(ballLeft + ballWidth, ballTop - 1)
+                        pointRightBottom = QPoint(ballLeft + ballWidth, ballTop + ballHeight + 1)
+
+
+                        if self._bricks[i].rect.contains(pointTopRight) and self._ball.xdir > 0:
+                            self._ball.xdir = -1 * math.fabs(self._ball.xdir)
+                            print("PointTopRight")
+                        if self._bricks[i].rect.contains(pointTopLeft)and self._ball.xdir < 0 :
+                            self._ball.xdir = math.fabs(self._ball.xdir)
+                            print("PointTopLeft")
+                        if self._bricks[i].rect.contains(pointLeftTop)and self._ball.ydir < 0:
+                            self._ball.ydir = math.fabs(self._ball.ydir)
+                            print("PointLeftTop")
+                        if self._bricks[i].rect.contains(pointLeftBottom)and self._ball.ydir > 0:
+                            self._ball.ydir = -1 * math.fabs(self._ball.ydir)
+                            print("PointLeftBottom")
+
+                        if self._bricks[i].rect.contains(pointBottomRight) and self._ball.xdir > 0:
+                            self._ball.xdir = -1 * math.fabs(self._ball.xdir)
+                            print("pointBottomRight")
+                        if self._bricks[i].rect.contains(pointBottomLeft)and self._ball.xdir < 0 :
+                            self._ball.xdir = math.fabs(self._ball.xdir)
+                            print("pointBottomLeft")
+                        if self._bricks[i].rect.contains(pointRightTop)and self._ball.ydir < 0:
+                            self._ball.ydir = math.fabs(self._ball.ydir)
+                            print("pointRightTop")
+                        if self._bricks[i].rect.contains(pointRightBottom)and self._ball.ydir > 0:
+                            self._ball.ydir = -1 * math.fabs(self._ball.ydir)
+                            print("pointRightBottom")
+
                     break
 
 

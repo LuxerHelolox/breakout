@@ -15,9 +15,7 @@ class Ball():
 
     def resetState(self):
         self._xdir = 0.5 + random.random()/2
-        print (self._xdir)
         self._ydir = -(math.sqrt ( 2- self._xdir*self._xdir))
-        print (self._ydir)
         self._left = self._initial_x
         self._top = self._initial_y
         self._rect.moveTo(self._initial_x, self._initial_y)
