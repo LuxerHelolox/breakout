@@ -25,6 +25,7 @@ class Breakout(QWidget):
         self._autopaddle = self.autopaddle = False
         self._bottom_edge = breakout_height
         self._physics = "Classic"
+        self._score = 0
         self._ball = Ball("android", self._physics , breakout_width/2+30, breakout_height-60, breakout_width )
         self._paddle = Paddle("android", breakout_width/2, breakout_height-40, breakout_width)
         self._bricks = [Brick("android", j * Breakout.BRICKWIDTH + 70, i * Breakout.BRICKHIGHT + 50)
@@ -47,6 +48,7 @@ class Breakout(QWidget):
             self.finishGame(painter, "Victory")
         else:
             self.drawObjects(painter)
+            self.drawScore(painter, str(self._score))
 
     def finishGame(self, painter, message):
         font = QFont("Courier", 24, QFont.Bold)
@@ -57,6 +59,17 @@ class Breakout(QWidget):
         w = self.width()
         painter.translate(QPoint(w / 2, h / 2))
         painter.drawText(-textwidth / 2, 0, message)
+
+    def drawScore(self, painter, score):
+        font = QFont("Fantasy", 16, QFont.Bold)
+        fm = QFontMetrics(font)
+        textwidth = fm.width(score)
+        painter.setFont(font)
+        h = self.height()
+        w = self.width()
+        painter.setPen(QColor(Qt.yellow))
+        painter.translate(QPoint(w - 25, 25))
+        painter.drawText(-textwidth / 2, 0, score)
 
     def drawObjects(self, painter):
         painter.drawImage(self._ball.rect, self._ball.image)
@@ -104,7 +117,7 @@ class Breakout(QWidget):
             self._gameStarted = True
             self._timerId = self.startTimer(Breakout.DELAY)
             self._autopaddle = self.autopaddle
-
+            self._score = 0
 
     def pauseGame(self):
         if self._paused:
@@ -189,6 +202,7 @@ class Breakout(QWidget):
             if self._ball.rect.intersects(self._bricks[i].rect):
                 if not self._bricks[i].destroyed:
                     self._bricks[i].destroyed = True
+                    self._score += 10
                     QSound.play("sounds\Robot_blip_1.wav")
 
                     ballLeft = self._ball.rect.left()
