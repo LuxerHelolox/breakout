@@ -79,6 +79,7 @@ class Breakout(QWidget):
             if not self._bricks[i].destroyed:
                 painter.drawImage(self._bricks[i].rect, self._bricks[i].image)
 
+
     def timerEvent(self, e):
         self.moveObjects()
         self.checkCollision()
@@ -155,15 +156,10 @@ class Breakout(QWidget):
 
             if self._ball.rect.intersects(self._paddle.rect):
 
-                p=QPainter(self)
-                p.setFont(QFont("Fantasy", 16, QFont.Bold))
-                p.setPen(QColor(Qt.red))
-                p.translate(QPoint(self._ball.rect.left(),self._ball.rect.top()))
-                p.drawText(0, 0, "5")
+                self._score -= 5
+                if self._score <0:
+                    self._score = 0
 
-                si = ScoreItem (p)
-
-                self._score += 5
                 paddleLPos = self._paddle.rect.left()
                 ballMiddle = self._ball.rect.left() + self._ball.rect.width()/2
 

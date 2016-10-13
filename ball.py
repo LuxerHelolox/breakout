@@ -19,7 +19,7 @@ class Ball():
 
     def resetState(self):
         self._image = QImage(Ball.library +"\\"+"ball.png")  # img = QtGui.QImage()
-        self._rect = self.image.rect()
+        self._rect = self._image.rect()
         if Ball.physics == "Classic":
             self._xdir = 1
             self._ydir = -1
