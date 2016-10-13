@@ -3,6 +3,7 @@ from PyQt4.QtGui import *
 from brick import *
 from paddle import *
 from ball import *
+from scoreitem import *
 import sys
 import random
 import math
@@ -153,6 +154,16 @@ class Breakout(QWidget):
                 self.victory()
 
             if self._ball.rect.intersects(self._paddle.rect):
+
+                p=QPainter(self)
+                p.setFont(QFont("Fantasy", 16, QFont.Bold))
+                p.setPen(QColor(Qt.red))
+                p.translate(QPoint(self._ball.rect.left(),self._ball.rect.top()))
+                p.drawText(0, 0, "5")
+
+                si = ScoreItem (p)
+
+                self._score += 5
                 paddleLPos = self._paddle.rect.left()
                 ballMiddle = self._ball.rect.left() + self._ball.rect.width()/2
 
@@ -263,6 +274,8 @@ class Breakout(QWidget):
     def changephysics(self,physics):
         self._physics = Ball.physics = physics
 
+    def scoreItemAnimation(self):
+        pass
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
