@@ -15,6 +15,8 @@ class Brick:
     def resetState(self):
         self._image = QImage(Brick.library +"\\"+"purple_brick.png")  # img = QtGui.QImage()
         self._destroyed = False
+        self._tick = 0
+        self._stage = 1
 
     @property
     def rect(self):
@@ -34,4 +36,20 @@ class Brick:
 
     @property
     def image(self):
-        return self._image  # in C++ it is reference, so the content may change!!!
+        return self._image
+
+    @property
+    def tick(self):
+        return self._tick
+
+    @tick.setter
+    def tick(self, tick):
+        self._tick = tick
+
+    @property
+    def stage(self):
+        return self._stage
+
+    @stage.setter
+    def stage(self, stage):
+        self._stage = stage

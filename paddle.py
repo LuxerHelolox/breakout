@@ -22,7 +22,7 @@ class Paddle:
         self._dx = x
 
     def move(self):
-        x = self._rect.x() + self._dx
+        x = self._rect.x() + self._speed * self._dx
         if x < 0:
             x = 0
         elif x > self._right_edge:
@@ -35,6 +35,7 @@ class Paddle:
         self._image = QImage(Paddle.library +"\paddle.png")  # img = QtGui.QImage()
         self._rect = self.image.rect()
         self._rect.moveTo(self._initial_x, self._initial_y)
+        self._speed = 1
 
     @property
     def rect(self):
