@@ -15,6 +15,12 @@ class Breakout(QWidget):
     BRICKHIGHT = 40
     BRICKWIDTH = 80
     DELAY = 5
+    LAYOUT = [("purple", "purple", "purple", "purple", "purple"),
+              ("purple", "green", "purple", "purple", "purple"),
+              ("purple", "white", "yello", "red", "purple"),
+              ("purple", "black", "blue", "purple", "purple"),
+              ("purple", "yello", "purple", "white", "purple"),
+              ("purple", "purple", "purple", "purple", "purple")]
 
     def __init__(self,breakout_width, breakout_height, breakout_title):
         QWidget.__init__(self)
@@ -24,12 +30,13 @@ class Breakout(QWidget):
         self._gameStarted = False
         self._autopaddle = self.autopaddle = False
         self._bottom_edge = breakout_height
-        self._physics = "Classic"
+        self._physics = "Realistic"
         self._score = 0
         self._scoreitems = []
         self._ball = Ball("android", self._physics , breakout_width/2+30, breakout_height-60, breakout_width )
         self._paddle = Paddle("android", breakout_width/2, breakout_height-40, breakout_width)
-        self._bricks = [Brick("android", j * Breakout.BRICKWIDTH + 70, i * Breakout.BRICKHIGHT + 50)
+        self._bricks = [Brick("android", j * Breakout.BRICKWIDTH + 70, i * Breakout.BRICKHIGHT + 50,
+                        Breakout.LAYOUT[i][j])
                         for i in range(Breakout.N_OF_ROWS) for j in range(Breakout.N_OF_COLUMNS)]
         self.setFixedSize(breakout_width, breakout_height)
         self.setWindowTitle(breakout_title)
@@ -58,13 +65,61 @@ class Breakout(QWidget):
         painter.save()
         font = QFont("Courier", 24, QFont.Bold)
         fm = QFontMetrics(font)
-        textwidth = fm.width(message)
         painter.setFont(font)
+        textwidth = fm.width(message)
+        painter.setPen(QColor(Qt.cyan))
         h = self.height()
         w = self.width()
-        painter.translate(QPoint(w / 2, h / 2))
+        painter.translate(QPoint(w / 2, h / 2-30))
         painter.drawText(-textwidth / 2, 0, message)
         painter.restore()
+
+        fo = open("bestscores.txt", "r")
+        highscore = fo.read()
+        fo.close()
+        if self._score < int(highscore):
+            message ="No new High Score ("+highscore+")"
+            painter.save()
+            font = QFont("Courier", 18, QFont.Bold)
+            painter.setPen(QColor(Qt.magenta))
+            fm = QFontMetrics(font)
+            painter.setFont(font)
+            textwidth = fm.width(message)
+            h = self.height()
+            w = self.width()
+            painter.translate(QPoint(w / 2, h / 2+30))
+            painter.drawText(-textwidth / 2, 0, message)
+            painter.restore()
+        elif self._score == int(highscore):
+            message ="You reached the old High Score"
+            painter.save()
+            font = QFont("Courier", 18, QFont.Bold)
+            fm = QFontMetrics(font)
+            painter.setPen(QColor(Qt.magenta))
+            painter.setFont(font)
+            textwidth = fm.width(message)
+            h = self.height()
+            w = self.width()
+            painter.translate(QPoint(w / 2, h / 2+30))
+            painter.drawText(-textwidth / 2, 0, message)
+            painter.restore()
+        else:
+            message ="New High Score: "+ str(self._score)
+            painter.save()
+            font = QFont("Courier", 18, QFont.Bold)
+            fm = QFontMetrics(font)
+            painter.setPen(QColor(Qt.yellow))
+            painter.setFont(font)
+            textwidth = fm.width(message)
+            h = self.height()
+            w = self.width()
+            painter.translate(QPoint(w / 2, h / 2+30))
+            painter.drawText(-textwidth / 2, 0, message)
+            painter.restore()
+            fo = open("bestscores.txt", "w+")
+            fo.write(str(self._score))
+            fo.close()
+
 
     def drawScore(self, painter, score):
         font = QFont("Fantasy", 16, QFont.Bold)
@@ -79,15 +134,16 @@ class Breakout(QWidget):
         painter.drawText(-textwidth / 2, 0, score)
         painter.restore()
         painter.setPen(QColor(Qt.red))
-        for scoreitem in self._scoreitems:
-            painter.save()
-            font = QFont("Fantasy", 14, QFont.Bold)
-            painter.translate(QPoint(scoreitem[1], scoreitem[2]))
-            painter.drawText(0, - 10, str(scoreitem[0]))
-            painter.restore()
-            scoreitem[3] -= 1
-            if scoreitem[3] <= 0:
-                self._scoreitems.remove(scoreitem)
+        if not self._gameOver and not self._gameWon:
+            for scoreitem in self._scoreitems:
+                painter.save()
+                font = QFont("Fantasy", 14, QFont.Bold)
+                painter.translate(QPoint(scoreitem[1], scoreitem[2]))
+                painter.drawText(0, - 10, str(scoreitem[0]))
+                painter.restore()
+                scoreitem[3] -= 1
+                if scoreitem[3] <= 0:
+                    self._scoreitems.remove(scoreitem)
 
 
     def drawObjects(self, painter):
@@ -233,27 +289,21 @@ class Breakout(QWidget):
 
                 elif self._physics == "Randomized":
 
-                    print(self._ball.xdir, self._ball.ydir)
                     if ballMiddle < first:
-                        print ("x<first")
                         self._ball.xdir = -0.866
                         self._ball.ydir = - 0.5
                     elif ballMiddle >= first and ballMiddle < second:
-                        print("first<x<second")
                         self._ball.xdir = - 0.7
                         self._ball.ydir = -0.7
                     elif ballMiddle >= second and ballMiddle < third:
                         self._ball.xdir = 0.5
                         self._ball.ydir = - 0.866
-                        print("second<x<third")
                         if random.random() - 0.5 < 0:
                             self._ball.xdir *= -1
                     elif ballMiddle >= third and ballMiddle < fourth:
-                        print("third<x<fourth")
                         self._ball.xdir = 0.7
                         self._ball.ydir = - 0.7
                     else:
-                        print("fourth<x")
                         self._ball.xdir = 0.866
                         self._ball.ydir = - 0.5
                 else:

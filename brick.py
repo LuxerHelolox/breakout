@@ -6,14 +6,15 @@ class Brick:
 
     library = ""
 
-    def __init__(self, library, x, y):
+    def __init__(self, library, x, y, color):
         Brick.library = library
+        self._color = color
         self.resetState()
         self._rect = self.image.rect()
         self._rect.translate(x, y)
 
     def resetState(self):
-        self._image = QImage(Brick.library +"\\"+"purple_brick.png")  # img = QtGui.QImage()
+        self._image = QImage(Brick.library +"\\"+self._color+"_brick.png")  # img = QtGui.QImage()
         self._destroyed = False
         self._tick = 0
         self._stage = 1
@@ -53,3 +54,7 @@ class Brick:
     @stage.setter
     def stage(self, stage):
         self._stage = stage
+
+    @property
+    def color(self):
+        return self._color

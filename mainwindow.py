@@ -86,7 +86,6 @@ class MainWindow(QMainWindow):
 
         self.atariClassicAct = self.physicsGroup.addAction(QAction(self.tr("Atari Classic"), self))
         self.atariClassicAct.setCheckable(True)
-        self.atariClassicAct.setChecked(True)
         self.connect(self.atariClassicAct, SIGNAL("triggered()"), self.atariclassicphysicsSelected)
 
         self.atariRandomizedAct = self.physicsGroup.addAction(QAction(self.tr("Atari Randomized"), self))
@@ -95,6 +94,7 @@ class MainWindow(QMainWindow):
 
         self.RealisticAct = self.physicsGroup.addAction(QAction(self.tr("Realistic"), self))
         self.RealisticAct.setCheckable(True)
+        self.RealisticAct.setChecked(True)
         self.connect(self.RealisticAct, SIGNAL("triggered()"), self.realisticphysicsSelected)
 
         self.autoPaddleAct = QAction(self.tr("Enabled"), self)
