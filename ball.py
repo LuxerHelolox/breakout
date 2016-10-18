@@ -21,11 +21,17 @@ class Ball():
         self._image = QImage(Ball.library +"\\"+"ball.png")  # img = QtGui.QImage()
         self._rect = self._image.rect()
         if Ball.physics == "Classic":
+            self._speed = 1
             self._xdir = 1
             self._ydir = -1
         else:
-            self._xdir = 0.5 + random.random()-1
-            self._ydir = -(math.sqrt ( 2- self._xdir*self._xdir))
+            self._speed = 1.414
+            self._xdir = 0.7
+            self._ydir = -0.7
+
+        if random.random()-0.5 < 0:
+            self._xdir *= -1
+
         self._left = self._initial_x
         self._top = self._initial_y
         self._rect.moveTo(self._initial_x, self._initial_y)
@@ -39,18 +45,18 @@ class Ball():
         return self._image
 
     def automove(self):
-        self._left += self._xdir
-        self._top += self._ydir
+        self._left += self._speed * self._xdir
+        self._top += self._speed * self._ydir
         self._rect.moveTo(int(self._left), int(self._top))
-        if self._rect.left() == 0:
+        if self._rect.left() <= 0:
             self._xdir *= -1
             QSound.play("sounds\Robot_blip_0.wav")
 
-        if self._rect.right() == self._right_edge:
+        if self._rect.right() >= self._right_edge:
             self._xdir *= -1
             QSound.play("sounds\Robot_blip_0.wav")
 
-        if self._rect.top() == 0:
+        if self._rect.top() <= 0:
             self._ydir *= -1
             QSound.play("sounds\Robot_blip_0.wav")
 

@@ -45,16 +45,19 @@ class MainWindow(QMainWindow):
                     "%s" % (__author__, __version__, __date__)))
 
     def createActions(self):
-        self.exitAct = QAction(self.tr("E&xit"), self)
+        self.restartAct = QAction(self.tr("Restart game"), self)
+        self.connect(self.restartAct, SIGNAL("triggered()"),  self.restartAction)
+
+        self.exitAct = QAction(self.tr("Exit"), self)
         self.exitAct.setShortcut(self.tr("Ctrl+Q"))
         self.exitAct.setStatusTip(self.tr("Exit the application"))
         self.connect(self.exitAct, SIGNAL("triggered()"), self, SLOT("close()"))
 
-        self.aboutAct = QAction(self.tr("&About"), self)
+        self.aboutAct = QAction(self.tr("About"), self)
         self.aboutAct.setStatusTip(self.tr("Show the application's About box"))
         self.connect(self.aboutAct, SIGNAL("triggered()"), self.about)
 
-        self.aboutQtAct = QAction(self.tr("About &Qt"), self)
+        self.aboutQtAct = QAction(self.tr("About Qt"), self)
         self.aboutQtAct.setStatusTip(self.tr("Show the Qt library's About box"))
         self.connect(self.aboutQtAct, SIGNAL("triggered()"), qApp, SLOT("aboutQt()"))
 
@@ -83,7 +86,6 @@ class MainWindow(QMainWindow):
 
         self.atariClassicAct = self.physicsGroup.addAction(QAction(self.tr("Atari Classic"), self))
         self.atariClassicAct.setCheckable(True)
-        self.atariClassicAct.setChecked(True)
         self.connect(self.atariClassicAct, SIGNAL("triggered()"), self.atariclassicphysicsSelected)
 
         self.atariRandomizedAct = self.physicsGroup.addAction(QAction(self.tr("Atari Randomized"), self))
@@ -92,6 +94,7 @@ class MainWindow(QMainWindow):
 
         self.RealisticAct = self.physicsGroup.addAction(QAction(self.tr("Realistic"), self))
         self.RealisticAct.setCheckable(True)
+        self.RealisticAct.setChecked(True)
         self.connect(self.RealisticAct, SIGNAL("triggered()"), self.realisticphysicsSelected)
 
         self.autoPaddleAct = QAction(self.tr("Enabled"), self)
@@ -99,25 +102,26 @@ class MainWindow(QMainWindow):
         self.connect(self.autoPaddleAct, SIGNAL("triggered()"), self.autopaddletoggled)
 
     def createMenus(self):
-        self.fileMenu = self.menuBar().addMenu(self.tr("&File"))
+        self.fileMenu = self.menuBar().addMenu(self.tr("File"))
+        self.fileMenu.addAction(self.restartAct)
         self.fileMenu.addAction(self.exitAct)
 
-        self.skinMenu = self.menuBar().addMenu(self.tr("&Skin"))
+        self.skinMenu = self.menuBar().addMenu(self.tr("Skin"))
 
         self.skinMenu.addAction(self.basicAct)
         self.skinMenu.addAction(self.androidAct)
         self.skinMenu.addAction(self.arcanoidAct)
         self.skinMenu.addAction(self.atariAct)
 
-        self.physicsMenu = self.menuBar().addMenu(self.tr("&Physics"))
+        self.physicsMenu = self.menuBar().addMenu(self.tr("Physics"))
         self.physicsMenu.addAction(self.atariClassicAct)
         self.physicsMenu.addAction(self.atariRandomizedAct)
         self.physicsMenu.addAction(self.RealisticAct)
 
-        self.autopaddleMenu = self.menuBar().addMenu(self.tr("&Auto_Paddle"))
+        self.autopaddleMenu = self.menuBar().addMenu(self.tr("Auto_Paddle"))
         self.autopaddleMenu.addAction(self.autoPaddleAct)
 
-        self.helpMenu = self.menuBar().addMenu(self.tr("&Help"))
+        self.helpMenu = self.menuBar().addMenu(self.tr("Help"))
         self.helpMenu.addAction(self.aboutAct)
         self.helpMenu.addAction(self.aboutQtAct)
 
@@ -161,11 +165,15 @@ class MainWindow(QMainWindow):
         self.physicsMenu.show()
 
     def realisticphysicsSelected(self):
-        self.breakoutwidget.changephysics ("Randomized")
+        self.breakoutwidget.changephysics ("Realistic")
         self.physicsMenu.show()
 
     def autopaddletoggled(self):
         self.breakoutwidget.autopaddle = self.autoPaddleAct.isChecked()
+        self.autopaddleMenu.show()
+
+    def restartAction(self):
+        self.breakoutwidget.resetGame()
 
 ################################################################
 if __name__ == "__main__":
