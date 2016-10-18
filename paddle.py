@@ -11,6 +11,7 @@ class Paddle:
         self._initial_x = initial_x
         self._initial_y = initial_y
         self._right_edge = right_edge - 80
+        self._flash_pos = 0
         self.resetState()
 
     @property
@@ -36,6 +37,7 @@ class Paddle:
         self._rect = self.image.rect()
         self._rect.moveTo(self._initial_x, self._initial_y)
         self._speed = 1
+        self._tick = 0
 
     @property
     def rect(self):
@@ -44,3 +46,19 @@ class Paddle:
     @property
     def image(self):
         return self._image
+
+    @property
+    def tick(self):
+        return self._tick
+
+    @tick.setter
+    def tick(self, tick):
+        self._tick = tick
+
+    @property
+    def flash_pos(self):
+        return self._flash_pos
+
+    @flash_pos.setter
+    def flash_pos(self, flash_pos):
+        self._flash_pos = flash_pos

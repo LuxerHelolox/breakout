@@ -27,10 +27,10 @@ class Ball():
         else:
             self._speed = 1.414
             self._xdir = 0.7
-            self._ydir = 0.7
+            self._ydir = -0.7
+
         if random.random()-0.5 < 0:
             self._xdir *= -1
-            self._ydir = -1
 
         self._left = self._initial_x
         self._top = self._initial_y

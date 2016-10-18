@@ -74,9 +74,13 @@ class Breakout(QWidget):
         painter.drawText(-textwidth / 2, 0, message)
         painter.restore()
 
-        fo = open("bestscores.txt", "r")
-        highscore = fo.read()
-        fo.close()
+        try:
+            fo = open("bestscores.txt", "r")
+            highscore = fo.read()
+            fo.close()
+        except:
+            highscore = "0"
+
         if self._score < int(highscore):
             message ="No new High Score ("+highscore+")"
             painter.save()
@@ -149,6 +153,11 @@ class Breakout(QWidget):
     def drawObjects(self, painter):
         painter.drawImage(self._ball.rect, self._ball.image)
         painter.drawImage(self._paddle.rect, self._paddle.image)
+        if self._paddle.tick > 0:
+            self._paddle.tick -= 1
+            painter.drawImage(self._paddle.rect.left() + 16* self._paddle.flash_pos,self._paddle.rect.top(),
+                              QImage("pow-low.png"))
+            print (self._paddle.tick, self._paddle.flash_pos)
         for i in range(Breakout.N_OF_BRICKS):
             if not self._bricks[i].destroyed:
                 painter.drawImage(self._bricks[i].rect, self._bricks[i].image)
@@ -256,6 +265,7 @@ class Breakout(QWidget):
             if self._ball.rect.intersects(self._paddle.rect):
 
                 self._scoreitems.append([-5,self._ball.rect.left(),self._ball.rect.top(),30])
+                self._paddle.tick = 30
 
                 self._score -= 5
                 if self._score <0:
@@ -274,41 +284,60 @@ class Breakout(QWidget):
                     if ballMiddle < first:
                         self._ball.xdir = -1
                         self._ball.ydir = -1
+                        self._paddle.flash_pos = 0
                     elif ballMiddle >= first and ballMiddle < second:
                         self._ball.xdir = -1
                         self._ball.ydir *= -1
+                        self._paddle.flash_pos = 1
                     elif ballMiddle >= second and ballMiddle < third:
                         self._ball.xdir = 0
                         self._ball.ydir = -1
+                        self._paddle.flash_pos = 2
                     elif ballMiddle >= third and ballMiddle < fourth:
                         self._ball.xdir = 1
                         self._ball.ydir *= -1
+                        self._paddle.flash_pos = 3
                     else :
                         self._ball.xdir = 1
                         self._ball.ydir = -1
+                        self._paddle.flash_pos = 4
 
                 elif self._physics == "Randomized":
 
                     if ballMiddle < first:
                         self._ball.xdir = -0.866
                         self._ball.ydir = - 0.5
+                        self._paddle.flash_pos = 0
                     elif ballMiddle >= first and ballMiddle < second:
                         self._ball.xdir = - 0.7
                         self._ball.ydir = -0.7
+                        self._paddle.flash_pos = 1
                     elif ballMiddle >= second and ballMiddle < third:
                         self._ball.xdir = 0.5
                         self._ball.ydir = - 0.866
                         if random.random() - 0.5 < 0:
                             self._ball.xdir *= -1
+                        self._paddle.flash_pos = 2
                     elif ballMiddle >= third and ballMiddle < fourth:
                         self._ball.xdir = 0.7
                         self._ball.ydir = - 0.7
+                        self._paddle.flash_pos = 3
                     else:
                         self._ball.xdir = 0.866
                         self._ball.ydir = - 0.5
+                        self._paddle.flash_pos = 4
                 else:
+                    if ballMiddle < first:
+                        self._paddle.flash_pos = 0
+                    elif ballMiddle >= first and ballMiddle < second:
+                        self._paddle.flash_pos = 1
+                    elif ballMiddle >= second and ballMiddle < third:
+                        self._paddle.flash_pos = 2
+                    elif ballMiddle >= third and ballMiddle < fourth:
+                        self._paddle.flash_pos = 3
+                    else:
+                        self._paddle.flash_pos = 4
 
-                    print(self._ball.xdir, self._ball.ydir)
                     if self._paddle.dx == 0:
                         self._ball.ydir *= -1
                     elif  self._paddle.dx < 0:
@@ -337,8 +366,6 @@ class Breakout(QWidget):
                         else:
                             self._ball.xdir = - 0.5
                             self._ball.ydir = - 0.866
-
-
 
                 QSound.play("sounds\Mario_Jumping.wav")
 
