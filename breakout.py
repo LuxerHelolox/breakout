@@ -15,12 +15,19 @@ class Breakout(QWidget):
     BRICKHIGHT = 40
     BRICKWIDTH = 80
     DELAY = 5
-    LAYOUT = [("purple", "purple", "purple", "purple", "purple"),
-              ("purple", "green", "purple", "purple", "purple"),
-              ("purple", "white", "yello", "red", "purple"),
-              ("purple", "black", "blue", "purple", "purple"),
-              ("purple", "yello", "purple", "white", "purple"),
-              ("purple", "purple", "purple", "purple", "purple")]
+    LAYOUT = [["purple", "purple", "purple", "purple", "purple"],
+              ["purple", "purple", "purple", "purple", "purple"],
+              ["purple", "purple", "yello", "purple", "purple"],
+              ["purple", "purple", "purple", "purple", "purple"],
+              ["purple", "purple", "purple", "purple", "purple"],
+              ["purple", "purple", "purple", "purple", "purple"],
+
+              ["purple", "purple", "purple", "purple", "purple"],
+              ["purple", "black", "black", "black", "purple"],
+              ["purple", "black", "yello", "black", "purple"],
+              ["purple", "black", "blue", "black", "purple"],
+              ["purple", "black", "black", "black", "purple"],
+              ["purple", "purple", "purple", "purple", "purple"]]
 
     def __init__(self,breakout_width, breakout_height, breakout_title):
         QWidget.__init__(self)
