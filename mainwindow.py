@@ -5,8 +5,8 @@ import sys
 import datetime
 
 __author__ = "Laszlo Balla"
-__version__ = "0.0.2"
-__date__ = "2016.10.11"
+__version__ = "0.0.3"
+__date__ = "2016.10.20"
 
 ################################################################
 def main():
@@ -39,10 +39,36 @@ class MainWindow(QMainWindow):
 
     def about(self):
         QMessageBox.about(self, self.tr("Breakout Game"),
-            self.tr("Rewritten in Python\n\n"
+            self.tr("Version: "
                     "%s\n"
                     "%s\n"
-                    "%s" % (__author__, __version__, __date__)))
+                    "%s\n\n"
+                    % ( __version__, __date__,__author__)))
+
+    def help(self):
+        QMessageBox.information(self, self.tr("Help"),
+                          self.tr("<b><u>Brick types:</u></b><p>"
+                                  "<b><font color=\"darkMagenta\">Purple:</font></b>"
+                                  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                                  "simple brick, value: 10 points<p>"
+                                  "<b>Black:</b>"
+                                  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                                  "needs 3 hits to destroy, value: 30 points when destroyed<p>"
+                                  "<b><font color=\"white\">White:</font></b>"
+                                  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                                  "ball is faster for 30 secs, double points<p>"
+                                  "<b><font color=\"yellow\">Yellow:</font></b>"
+                                  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                                  "you are lucky: your score is doubled<p>"
+                                  "<b><font color=\"red\">Red:</font></b>"
+                                  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                                  "paddle shrinks, but faster for 30 secs<p>"
+                                  "<b><font color=\"green\">Green:</font></b>"
+                                  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                                  "three balls on the table<p>"
+                                  "<b><font color=\"blue\">Blue:</font></b>"
+                                  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                                  "paddle grows, but slower for 30 secs<p>"))
 
     def createActions(self):
         self.restartAct = QAction(self.tr("Restart game"), self)
@@ -52,6 +78,10 @@ class MainWindow(QMainWindow):
         self.exitAct.setShortcut(self.tr("Ctrl+Q"))
         self.exitAct.setStatusTip(self.tr("Exit the application"))
         self.connect(self.exitAct, SIGNAL("triggered()"), self, SLOT("close()"))
+
+        self.helpAct = QAction(self.tr("Help"), self)
+        self.helpAct.setStatusTip(self.tr("Show the Help"))
+        self.connect(self.helpAct, SIGNAL("triggered()"), self.help)
 
         self.aboutAct = QAction(self.tr("About"), self)
         self.aboutAct.setStatusTip(self.tr("Show the application's About box"))
@@ -122,6 +152,7 @@ class MainWindow(QMainWindow):
         self.autopaddleMenu.addAction(self.autoPaddleAct)
 
         self.helpMenu = self.menuBar().addMenu(self.tr("Help"))
+        self.helpMenu.addAction(self.helpAct)
         self.helpMenu.addAction(self.aboutAct)
         self.helpMenu.addAction(self.aboutQtAct)
 
