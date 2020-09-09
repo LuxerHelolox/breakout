@@ -1,12 +1,10 @@
-from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
 
 class Paddle:
-
     library = ""
 
-    def __init__(self, library, initial_x,initial_y, right_edge ):
+    def __init__(self, library, initial_x, initial_y, right_edge):
         Paddle.library = library
         self._initial_x = initial_x
         self._initial_y = initial_y
@@ -34,7 +32,7 @@ class Paddle:
     def resetState(self):
         self._x = self._initial_x
         self._dx = 0
-        self._image = QImage(Paddle.library +"\paddle.png")  # img = QtGui.QImage()
+        self._image = QImage(Paddle.library + "\paddle.png")  # img = QtGui.QImage()
         self._rect = self.image.rect()
         self._rect.moveTo(self._initial_x, self._initial_y)
         self._speed = 2

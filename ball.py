@@ -4,11 +4,9 @@ from PyQt5.QtGui import *
 from PyQt5.QtMultimedia import QSound
 
 
-class Ball():
+class Ball:
     physics = ""
     library = ""
-
-
 
     def __init__(self, library, physics, initial_x, initial_y, right_edge):
         self._initial_x = initial_x
@@ -54,7 +52,7 @@ class Ball():
         if self._rect.left() <= 0:
             self._xdir *= -1
             self.blip.play()
-            #QSound.play("sounds\Robot_blip_0.wav")
+            # QSound.play("sounds\Robot_blip_0.wav")
 
         if self._rect.right() >= self._right_edge:
             self._xdir *= -1

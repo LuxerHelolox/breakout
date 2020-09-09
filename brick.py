@@ -1,9 +1,8 @@
-from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtMultimedia import QSound
 
-class Brick:
 
+class Brick:
     library = ""
 
     def __init__(self, library, x, y, color):
@@ -15,7 +14,7 @@ class Brick:
         Brick.blip = QSound("sounds\Robot_blip_1.wav")
 
     def resetState(self):
-        self._image = QImage(Brick.library +"\\"+self._color+"_brick.png")  # img = QtGui.QImage()
+        self._image = QImage(Brick.library + "\\" + self._color + "_brick.png")  # img = QtGui.QImage()
         self._destroyed = False
         self._tick = 0
         self._stage = 1
@@ -65,16 +64,16 @@ class Brick:
         if self._color == "purple":
             self._destroyed = True
             Brick.blip.play()
-            #QSound.play("sounds\Robot_blip_1.wav")
+            # QSound.play("sounds\Robot_blip_1.wav")
             return score + 10, 10
         elif self._color == "yello":
             self._destroyed = True
             Brick.blip.play()
             return score * 2, score
         elif self._color == "black":
-            if  self._blackhit<2:
+            if self._blackhit < 2:
                 self._blackhit += 1
-                self._image = QImage(Brick.library +"\\"+self._color+"_brick"+str(self._blackhit)+".png")
+                self._image = QImage(Brick.library + "\\" + self._color + "_brick" + str(self._blackhit) + ".png")
                 return score, 0
             else:
                 self._destroyed = True

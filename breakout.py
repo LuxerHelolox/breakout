@@ -1,13 +1,13 @@
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+import math
+import sys
+
 from PyQt5.QtWidgets import *
+
+from ball import *
 from brick import *
 from paddle import *
-from ball import *
 from scoreitem import *
-import sys
-import random
-import math
+
 
 class Breakout(QWidget):
     N_OF_ROWS = 6
@@ -18,20 +18,20 @@ class Breakout(QWidget):
     DELAY = 5
     LASTWALL = 2
     LAYOUT = [[["purple", "purple", "purple", "purple", "purple"],
-              ["purple", "purple", "purple", "purple", "purple"],
-              ["purple", "purple", "yello", "purple", "purple"],
-              ["purple", "purple", "purple", "purple", "purple"],
-              ["purple", "purple", "purple", "purple", "purple"],
-              ["purple", "purple", "purple", "purple", "purple"]],
+               ["purple", "purple", "purple", "purple", "purple"],
+               ["purple", "purple", "yello", "purple", "purple"],
+               ["purple", "purple", "purple", "purple", "purple"],
+               ["purple", "purple", "purple", "purple", "purple"],
+               ["purple", "purple", "purple", "purple", "purple"]],
 
               [["purple", "purple", "purple", "purple", "purple"],
-              ["purple", "black", "black", "black", "purple"],
-              ["purple", "black", "yello", "black", "purple"],
-              ["purple", "black", "yello", "black", "purple"],
-              ["purple", "black", "black", "black", "purple"],
-              ["purple", "purple", "purple", "purple", "purple"]]]
+               ["purple", "black", "black", "black", "purple"],
+               ["purple", "black", "yello", "black", "purple"],
+               ["purple", "black", "yello", "black", "purple"],
+               ["purple", "black", "black", "black", "purple"],
+               ["purple", "purple", "purple", "purple", "purple"]]]
 
-    def __init__(self,breakout_width, breakout_height, breakout_title):
+    def __init__(self, breakout_width, breakout_height, breakout_title):
         QWidget.__init__(self)
         self._wall = 1
         self._gameOver = False
@@ -44,10 +44,10 @@ class Breakout(QWidget):
         self._score = 0
         self._lastscore = 0
         self._scoreitems = []
-        self._ball = Ball("android", self._physics , breakout_width/2+30, breakout_height-60, breakout_width )
-        self._paddle = Paddle("android", breakout_width/2, breakout_height-40, breakout_width)
+        self._ball = Ball("android", self._physics, breakout_width / 2 + 30, breakout_height - 60, breakout_width)
+        self._paddle = Paddle("android", breakout_width / 2, breakout_height - 40, breakout_width)
         self._bricks = [Brick("android", j * Breakout.BRICKWIDTH + 70, i * Breakout.BRICKHIGHT + 50,
-                        Breakout.LAYOUT[self._wall -1][i][j])
+                              Breakout.LAYOUT[self._wall - 1][i][j])
                         for i in range(Breakout.N_OF_ROWS) for j in range(Breakout.N_OF_COLUMNS)]
         self.setFixedSize(breakout_width, breakout_height)
         self.setWindowTitle(breakout_title)
@@ -56,7 +56,6 @@ class Breakout(QWidget):
 
         # self.setBackgroundRole(QPalette.Dark)
         # self.setAutoFillBackground (True)
-
 
         palette = QPalette()
         palette.setBrush(QPalette.Background, QBrush(QPixmap("bkgnd.jpg")))
@@ -76,7 +75,6 @@ class Breakout(QWidget):
                 self.drawWallNumber(painter)
             self.drawScore(painter, str(self._score))
 
-
     def finishGame(self, painter, message):
         painter.save()
         font = QFont("Courier", 24, QFont.Bold)
@@ -86,7 +84,7 @@ class Breakout(QWidget):
         painter.setPen(QColor(Qt.cyan))
         h = self.height()
         w = self.width()
-        painter.translate(QPoint(w / 2, h / 2-30))
+        painter.translate(QPoint(w / 2, h / 2 - 30))
         painter.drawText(-textwidth / 2, 0, message)
         painter.restore()
 
@@ -98,7 +96,7 @@ class Breakout(QWidget):
             highscore = "0"
 
         if self._score < int(highscore):
-            message ="No new High Score ("+highscore+")"
+            message = "No new High Score (" + highscore + ")"
             painter.save()
             font = QFont("Courier", 18, QFont.Bold)
             painter.setPen(QColor(Qt.magenta))
@@ -107,11 +105,11 @@ class Breakout(QWidget):
             textwidth = fm.width(message)
             h = self.height()
             w = self.width()
-            painter.translate(QPoint(w / 2, h / 2+30))
+            painter.translate(QPoint(w / 2, h / 2 + 30))
             painter.drawText(-textwidth / 2, 0, message)
             painter.restore()
         elif self._score == int(highscore):
-            message ="You reached the old High Score"
+            message = "You reached the old High Score"
             painter.save()
             font = QFont("Courier", 18, QFont.Bold)
             fm = QFontMetrics(font)
@@ -120,11 +118,11 @@ class Breakout(QWidget):
             textwidth = fm.width(message)
             h = self.height()
             w = self.width()
-            painter.translate(QPoint(w / 2, h / 2+30))
+            painter.translate(QPoint(w / 2, h / 2 + 30))
             painter.drawText(-textwidth / 2, 0, message)
             painter.restore()
         else:
-            message ="New High Score: "+ str(self._score)
+            message = "New High Score: " + str(self._score)
             painter.save()
             font = QFont("Courier", 18, QFont.Bold)
             fm = QFontMetrics(font)
@@ -133,13 +131,12 @@ class Breakout(QWidget):
             textwidth = fm.width(message)
             h = self.height()
             w = self.width()
-            painter.translate(QPoint(w / 2, h / 2+30))
+            painter.translate(QPoint(w / 2, h / 2 + 30))
             painter.drawText(-textwidth / 2, 0, message)
             painter.restore()
             fo = open("bestscores.txt", "w+")
             fo.write(str(self._score))
             fo.close()
-
 
     def drawScore(self, painter, score):
         font = QFont("Fantasy", 16, QFont.Bold)
@@ -165,13 +162,12 @@ class Breakout(QWidget):
                 if scoreitem[3] <= 0:
                     self._scoreitems.remove(scoreitem)
 
-
     def drawObjects(self, painter):
         painter.drawImage(self._ball.rect, self._ball.image)
         painter.drawImage(self._paddle.rect, self._paddle.image)
         if self._paddle.tick > 0:
             self._paddle.tick -= 1
-            painter.drawImage(self._paddle.rect.left() + 16* self._paddle.flash_pos,self._paddle.rect.top(),
+            painter.drawImage(self._paddle.rect.left() + 16 * self._paddle.flash_pos, self._paddle.rect.top(),
                               QImage("pow-low.png"))
         for i in range(Breakout.N_OF_BRICKS):
             if not self._bricks[i].destroyed:
@@ -187,7 +183,7 @@ class Breakout(QWidget):
         w = self.width()
         painter.save()
         painter.setPen(QColor(Qt.red))
-        painter.translate(QPoint(w / 2, h / 2-30))
+        painter.translate(QPoint(w / 2, h / 2 - 30))
         painter.drawText(-textwidth / 2, 0, message)
         painter.restore()
 
@@ -201,7 +197,7 @@ class Breakout(QWidget):
         self._paddle.move()
 
     def keyReleaseEvent(self, e):
-        if not self._autopaddle and(e.key() == Qt.Key_Left or e.key() == Qt.Key_Right):
+        if not self._autopaddle and (e.key() == Qt.Key_Left or e.key() == Qt.Key_Right):
             self._paddle.dx = 0
 
     def keyPressEvent(self, e):
@@ -221,8 +217,8 @@ class Breakout(QWidget):
     def startGame(self):
         if not self._gameStarted:
             if self._gameWon:
-                if self._wall <Breakout.LASTWALL:
-                    self._wall +=1
+                if self._wall < Breakout.LASTWALL:
+                    self._wall += 1
                     self._bricks = [Brick("android", j * Breakout.BRICKWIDTH + 70, i * Breakout.BRICKHIGHT + 50,
                                           Breakout.LAYOUT[self._wall - 1][i][j])
                                     for i in range(Breakout.N_OF_ROWS) for j in range(Breakout.N_OF_COLUMNS)]
@@ -237,7 +233,7 @@ class Breakout(QWidget):
                     self.repaint()
 
             else:
-                #QSound.play("sounds\Mario_Jumping.wav")
+                # QSound.play("sounds\Mario_Jumping.wav")
                 self.mario.play()
                 self._ball.resetState()
                 self._paddle.resetState()
@@ -290,18 +286,18 @@ class Breakout(QWidget):
         if self._ball.rect.bottom() > self._bottom_edge:
             self.stopGame()
 
-        if not self._ball.rect.bottom() > self._bottom_edge-38:
+        if not self._ball.rect.bottom() > self._bottom_edge - 38:
             j = 0
             for i in range(Breakout.N_OF_BRICKS):
                 if self._bricks[i].destroyed:
-                    if self._wall== Breakout.LASTWALL:
+                    if self._wall == Breakout.LASTWALL:
                         self._bricks[i].tick += 1
                         if self._bricks[i].tick > 20000:
                             # ez igy nagyon nem koser mert ott lehet a labda!!!
                             self._bricks[i].destroyed = False
                             self._bricks[i].tick = 0
                             self._bricks[i].stage += 1
-                            #QSound.play("sounds\Robot_blip_0.wav")
+                            # QSound.play("sounds\Robot_blip_0.wav")
                             self.blip.play()
 
                     else:
@@ -312,15 +308,15 @@ class Breakout(QWidget):
 
             if self._ball.rect.intersects(self._paddle.rect):
 
-                self._scoreitems.append([-5,self._ball.rect.left(),self._ball.rect.top(),30])
+                self._scoreitems.append([-5, self._ball.rect.left(), self._ball.rect.top(), 30])
                 self._paddle.tick = 30
 
                 self._score -= 5
-                if self._score <0:
+                if self._score < 0:
                     self._score = 0
 
                 paddleLPos = self._paddle.rect.left()
-                ballMiddle = self._ball.rect.left() + self._ball.rect.width()/2
+                ballMiddle = self._ball.rect.left() + self._ball.rect.width() / 2
 
                 first = paddleLPos + 16
                 second = paddleLPos + 32
@@ -345,7 +341,7 @@ class Breakout(QWidget):
                         self._ball.xdir = 1
                         self._ball.ydir *= -1
                         self._paddle.flash_pos = 3
-                    else :
+                    else:
                         self._ball.xdir = 1
                         self._ball.ydir = -1
                         self._paddle.flash_pos = 4
@@ -388,7 +384,7 @@ class Breakout(QWidget):
 
                     if self._paddle.dx == 0:
                         self._ball.ydir *= -1
-                    elif  self._paddle.dx < 0:
+                    elif self._paddle.dx < 0:
                         if self._ball.xdir == -0.866 or self._ball.xdir == - 0.7:
                             self._ball.xdir = -0.866
                             self._ball.ydir = - 0.5
@@ -406,7 +402,7 @@ class Breakout(QWidget):
                             self._ball.xdir = 0.866
                             self._ball.ydir = - 0.5
                         elif self._ball.xdir == 0.5:
-                            self._ball.xdir =  0.7
+                            self._ball.xdir = 0.7
                             self._ball.ydir = -0.7
                         elif self._ball.xdir == - 0.866:
                             self._ball.xdir = - 0.7
@@ -415,9 +411,8 @@ class Breakout(QWidget):
                             self._ball.xdir = - 0.5
                             self._ball.ydir = - 0.866
 
-                #QSound.play("sounds\Mario_Jumping.wav")
+                # QSound.play("sounds\Mario_Jumping.wav")
                 self.mario.play()
-
 
         for i in range(Breakout.N_OF_BRICKS):
             if self._ball.rect.intersects(self._bricks[i].rect):
@@ -455,40 +450,40 @@ class Breakout(QWidget):
                         pointRightTop = QPoint(ballLeft + ballWidth, ballTop - 1)
                         pointRightBottom = QPoint(ballLeft + ballWidth, ballTop + ballHeight + 1)
 
-
                         if self._bricks[i].rect.contains(pointTopRight) and self._ball.xdir > 0:
                             self._ball.xdir = -1 * math.fabs(self._ball.xdir)
-                        if self._bricks[i].rect.contains(pointTopLeft)and self._ball.xdir < 0 :
+                        if self._bricks[i].rect.contains(pointTopLeft) and self._ball.xdir < 0:
                             self._ball.xdir = math.fabs(self._ball.xdir)
-                        if self._bricks[i].rect.contains(pointLeftTop)and self._ball.ydir < 0:
+                        if self._bricks[i].rect.contains(pointLeftTop) and self._ball.ydir < 0:
                             self._ball.ydir = math.fabs(self._ball.ydir)
-                        if self._bricks[i].rect.contains(pointLeftBottom)and self._ball.ydir > 0:
+                        if self._bricks[i].rect.contains(pointLeftBottom) and self._ball.ydir > 0:
                             self._ball.ydir = -1 * math.fabs(self._ball.ydir)
                         if self._bricks[i].rect.contains(pointBottomRight) and self._ball.xdir > 0:
                             self._ball.xdir = -1 * math.fabs(self._ball.xdir)
-                        if self._bricks[i].rect.contains(pointBottomLeft)and self._ball.xdir < 0 :
+                        if self._bricks[i].rect.contains(pointBottomLeft) and self._ball.xdir < 0:
                             self._ball.xdir = math.fabs(self._ball.xdir)
-                        if self._bricks[i].rect.contains(pointRightTop)and self._ball.ydir < 0:
+                        if self._bricks[i].rect.contains(pointRightTop) and self._ball.ydir < 0:
                             self._ball.ydir = math.fabs(self._ball.ydir)
-                        if self._bricks[i].rect.contains(pointRightBottom)and self._ball.ydir > 0:
+                        if self._bricks[i].rect.contains(pointRightBottom) and self._ball.ydir > 0:
                             self._ball.ydir = -1 * math.fabs(self._ball.ydir)
 
                     break
 
-    def changeskin(self,library):
+    def changeskin(self, library):
         Ball.library = library
         Brick.library = library
         Paddle.library = library
 
-    def changephysics(self,physics):
+    def changephysics(self, physics):
         self._physics = Ball.physics = physics
 
     def scoreItemAnimation(self):
         pass
 
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = Breakout(540, 800,"Breakout")
+    window = Breakout(540, 800, "Breakout")
     # window.setFixedSize(300, 400)
     # window.setWindowTitle("Breakout")
     window.show()
