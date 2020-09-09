@@ -1,5 +1,6 @@
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 from brick import *
 from paddle import *
 from ball import *
@@ -15,22 +16,24 @@ class Breakout(QWidget):
     BRICKHIGHT = 40
     BRICKWIDTH = 80
     DELAY = 5
-    LAYOUT = [["purple", "purple", "purple", "purple", "purple"],
+    LASTWALL = 2
+    LAYOUT = [[["purple", "purple", "purple", "purple", "purple"],
               ["purple", "purple", "purple", "purple", "purple"],
               ["purple", "purple", "yello", "purple", "purple"],
               ["purple", "purple", "purple", "purple", "purple"],
               ["purple", "purple", "purple", "purple", "purple"],
-              ["purple", "purple", "purple", "purple", "purple"],
+              ["purple", "purple", "purple", "purple", "purple"]],
 
-              ["purple", "purple", "purple", "purple", "purple"],
+              [["purple", "purple", "purple", "purple", "purple"],
               ["purple", "black", "black", "black", "purple"],
               ["purple", "black", "yello", "black", "purple"],
-              ["purple", "black", "blue", "black", "purple"],
+              ["purple", "black", "yello", "black", "purple"],
               ["purple", "black", "black", "black", "purple"],
-              ["purple", "purple", "purple", "purple", "purple"]]
+              ["purple", "purple", "purple", "purple", "purple"]]]
 
     def __init__(self,breakout_width, breakout_height, breakout_title):
         QWidget.__init__(self)
+        self._wall = 1
         self._gameOver = False
         self._gameWon = False
         self._paused = False
@@ -39,14 +42,18 @@ class Breakout(QWidget):
         self._bottom_edge = breakout_height
         self._physics = "Realistic"
         self._score = 0
+        self._lastscore = 0
         self._scoreitems = []
         self._ball = Ball("android", self._physics , breakout_width/2+30, breakout_height-60, breakout_width )
         self._paddle = Paddle("android", breakout_width/2, breakout_height-40, breakout_width)
         self._bricks = [Brick("android", j * Breakout.BRICKWIDTH + 70, i * Breakout.BRICKHIGHT + 50,
-                        Breakout.LAYOUT[i][j])
+                        Breakout.LAYOUT[self._wall -1][i][j])
                         for i in range(Breakout.N_OF_ROWS) for j in range(Breakout.N_OF_COLUMNS)]
         self.setFixedSize(breakout_width, breakout_height)
         self.setWindowTitle(breakout_title)
+        self.blip = QSound("sounds\Robot_blip_0.wav")
+        self.mario = QSound("sounds\Mario_Jumping.wav")
+
         # self.setBackgroundRole(QPalette.Dark)
         # self.setAutoFillBackground (True)
 
@@ -65,6 +72,8 @@ class Breakout(QWidget):
             self.drawScore(painter, str(self._score))
         else:
             self.drawObjects(painter)
+            if not self._gameStarted:
+                self.drawWallNumber(painter)
             self.drawScore(painter, str(self._score))
 
 
@@ -164,11 +173,23 @@ class Breakout(QWidget):
             self._paddle.tick -= 1
             painter.drawImage(self._paddle.rect.left() + 16* self._paddle.flash_pos,self._paddle.rect.top(),
                               QImage("pow-low.png"))
-            print (self._paddle.tick, self._paddle.flash_pos)
         for i in range(Breakout.N_OF_BRICKS):
             if not self._bricks[i].destroyed:
                 painter.drawImage(self._bricks[i].rect, self._bricks[i].image)
 
+    def drawWallNumber(self, painter):
+        message = "Wall n." + str(self._wall)
+        font = QFont("Fantasy", 24, QFont.Bold)
+        fm = QFontMetrics(font)
+        textwidth = fm.width(message)
+        painter.setFont(font)
+        h = self.height()
+        w = self.width()
+        painter.save()
+        painter.setPen(QColor(Qt.red))
+        painter.translate(QPoint(w / 2, h / 2-30))
+        painter.drawText(-textwidth / 2, 0, message)
+        painter.restore()
 
     def timerEvent(self, e):
         self.moveObjects()
@@ -199,17 +220,35 @@ class Breakout(QWidget):
 
     def startGame(self):
         if not self._gameStarted:
-            QSound.play("sounds\Mario_Jumping.wav")
-            self._ball.resetState()
-            self._paddle.resetState()
-            for i in range(Breakout.N_OF_BRICKS):
-                self._bricks[i].resetState()
-            self._gameOver = False
-            self._gameWon = False
-            self._gameStarted = True
-            self._timerId = self.startTimer(Breakout.DELAY)
-            self._autopaddle = self.autopaddle
-            self._score = 0
+            if self._gameWon:
+                if self._wall <Breakout.LASTWALL:
+                    self._wall +=1
+                    self._bricks = [Brick("android", j * Breakout.BRICKWIDTH + 70, i * Breakout.BRICKHIGHT + 50,
+                                          Breakout.LAYOUT[self._wall - 1][i][j])
+                                    for i in range(Breakout.N_OF_ROWS) for j in range(Breakout.N_OF_COLUMNS)]
+                    self._ball.resetState()
+                    self._paddle.resetState()
+                    for i in range(Breakout.N_OF_BRICKS):
+                        self._bricks[i].resetState()
+                    self._gameOver = False
+                    self._gameWon = False
+                    self._lastscore = self._score
+                    self._scoreitems = []
+                    self.repaint()
+
+            else:
+                #QSound.play("sounds\Mario_Jumping.wav")
+                self.mario.play()
+                self._ball.resetState()
+                self._paddle.resetState()
+                for i in range(Breakout.N_OF_BRICKS):
+                    self._bricks[i].resetState()
+                self._gameOver = False
+                self._gameWon = False
+                self._gameStarted = True
+                self._timerId = self.startTimer(Breakout.DELAY)
+                self._autopaddle = self.autopaddle
+                self._score = self._lastscore
 
     def resetGame(self):
         if self._paused:
@@ -255,13 +294,15 @@ class Breakout(QWidget):
             j = 0
             for i in range(Breakout.N_OF_BRICKS):
                 if self._bricks[i].destroyed:
-                    self._bricks[i].tick += 1
-                    if self._bricks[i].tick > 20000:
-                        # ez igy nagyon nem koser mert ott lehet a labda!!!
-                        self._bricks[i].destroyed = False
-                        self._bricks[i].tick = 0
-                        self._bricks[i].stage += 1
-                        QSound.play("sounds\Robot_blip_0.wav")
+                    if self._wall== Breakout.LASTWALL:
+                        self._bricks[i].tick += 1
+                        if self._bricks[i].tick > 20000:
+                            # ez igy nagyon nem koser mert ott lehet a labda!!!
+                            self._bricks[i].destroyed = False
+                            self._bricks[i].tick = 0
+                            self._bricks[i].stage += 1
+                            #QSound.play("sounds\Robot_blip_0.wav")
+                            self.blip.play()
 
                     else:
                         j += 1
@@ -374,15 +415,15 @@ class Breakout(QWidget):
                             self._ball.xdir = - 0.5
                             self._ball.ydir = - 0.866
 
-                QSound.play("sounds\Mario_Jumping.wav")
+                #QSound.play("sounds\Mario_Jumping.wav")
+                self.mario.play()
+
 
         for i in range(Breakout.N_OF_BRICKS):
             if self._ball.rect.intersects(self._bricks[i].rect):
                 if not self._bricks[i].destroyed:
-                    self._scoreitems.append([self._bricks[i].stage *10, self._ball.rect.left(), self._ball.rect.top(), 30])
-                    self._bricks[i].destroyed = True
-                    self._score += self._bricks[i].stage * 10
-                    QSound.play("sounds\Robot_blip_1.wav")
+                    self._score, scoredelta = self._bricks[i].collision_behavior(self._score)
+                    self._scoreitems.append([scoredelta, self._ball.rect.left(), self._ball.rect.top(), 30])
 
                     ballLeft = self._ball.rect.left()
                     ballHeight = self._ball.rect.height()

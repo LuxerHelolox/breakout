@@ -1,6 +1,6 @@
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtMultimedia import QSound
 
 class Brick:
 
@@ -12,12 +12,14 @@ class Brick:
         self.resetState()
         self._rect = self.image.rect()
         self._rect.translate(x, y)
+        Brick.blip = QSound("sounds\Robot_blip_1.wav")
 
     def resetState(self):
         self._image = QImage(Brick.library +"\\"+self._color+"_brick.png")  # img = QtGui.QImage()
         self._destroyed = False
         self._tick = 0
         self._stage = 1
+        self._blackhit = 0
 
     @property
     def rect(self):
@@ -58,3 +60,27 @@ class Brick:
     @property
     def color(self):
         return self._color
+
+    def collision_behavior(self, score):
+        if self._color == "purple":
+            self._destroyed = True
+            Brick.blip.play()
+            #QSound.play("sounds\Robot_blip_1.wav")
+            return score + 10, 10
+        elif self._color == "yello":
+            self._destroyed = True
+            Brick.blip.play()
+            return score * 2, score
+        elif self._color == "black":
+            if  self._blackhit<2:
+                self._blackhit += 1
+                self._image = QImage(Brick.library +"\\"+self._color+"_brick"+str(self._blackhit)+".png")
+                return score, 0
+            else:
+                self._destroyed = True
+                Brick.blip.play()
+                return score + 30, 30
+        else:
+            self._destroyed = True
+            Brick.blip.play()
+            return score + 10, 10

@@ -1,5 +1,5 @@
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 
 
 class Paddle:
@@ -23,20 +23,21 @@ class Paddle:
         self._dx = x
 
     def move(self):
-        x = self._rect.x() + self._speed * self._dx
-        if x < 0:
-            x = 0
-        elif x > self._right_edge:
-            x = self._right_edge
+        self._x += self._speed * self._dx
+        if self._x < 0:
+            self._x = 0
+        elif self._x > self._right_edge:
+            self._x = self._right_edge
         y = self._rect.top()
-        self._rect.moveTo(x, y)
+        self._rect.moveTo(int(self._x), y)
 
     def resetState(self):
+        self._x = self._initial_x
         self._dx = 0
         self._image = QImage(Paddle.library +"\paddle.png")  # img = QtGui.QImage()
         self._rect = self.image.rect()
         self._rect.moveTo(self._initial_x, self._initial_y)
-        self._speed = 1
+        self._speed = 2
         self._tick = 0
 
     @property

@@ -1,24 +1,27 @@
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
 import random
-import math
+
+from PyQt5.QtGui import *
+from PyQt5.QtMultimedia import QSound
+
 
 class Ball():
-
     physics = ""
     library = ""
 
-    def __init__(self,library, physics, initial_x,initial_y, right_edge):
+
+
+    def __init__(self, library, physics, initial_x, initial_y, right_edge):
         self._initial_x = initial_x
         self._initial_y = initial_y
         self._right_edge = right_edge
         Ball.library = library
         Ball.physics = physics
+        self.blip = QSound("sounds\Robot_blip_0.wav")
         random.seed()
         self.resetState()
 
     def resetState(self):
-        self._image = QImage(Ball.library +"\\"+"ball.png")  # img = QtGui.QImage()
+        self._image = QImage(Ball.library + "\\" + "ball.png")  # img = QtGui.QImage()
         self._rect = self._image.rect()
         if Ball.physics == "Classic":
             self._speed = 1
@@ -29,7 +32,7 @@ class Ball():
             self._xdir = 0.7
             self._ydir = -0.7
 
-        if random.random()-0.5 < 0:
+        if random.random() - 0.5 < 0:
             self._xdir *= -1
 
         self._left = self._initial_x
@@ -50,15 +53,16 @@ class Ball():
         self._rect.moveTo(int(self._left), int(self._top))
         if self._rect.left() <= 0:
             self._xdir *= -1
-            QSound.play("sounds\Robot_blip_0.wav")
+            self.blip.play()
+            #QSound.play("sounds\Robot_blip_0.wav")
 
         if self._rect.right() >= self._right_edge:
             self._xdir *= -1
-            QSound.play("sounds\Robot_blip_0.wav")
+            self.blip.play()
 
         if self._rect.top() <= 0:
             self._ydir *= -1
-            QSound.play("sounds\Robot_blip_0.wav")
+            self.blip.play()
 
     @property
     def xdir(self):
@@ -75,6 +79,3 @@ class Ball():
     @ydir.setter
     def ydir(self, y):
         self._ydir = y
-
-
-
